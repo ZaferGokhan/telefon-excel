@@ -1,47 +1,47 @@
 # Telefon Excel
 
-USB ile takılan Samsung telefonun bilgilerini okur ve tek bir Excel dosyasına yazar. Aynı telefon tekrar takılırsa yeni satır açmaz; seri numarasına göre mevcut satırı günceller.
+Reads a Samsung phone plugged in over USB and writes the details to a single Excel file. Plugging the same phone in again does not add a new row. The existing row is updated by serial number.
 
-Pencere küçük ve üstte kalır. 50–60 telefon art arda takılıp çıkarılabilir.
+The window stays small and on top, so 50–60 phones can be connected one after another.
 
-## Okunan bilgiler
+## What it reads
 
-| Alan | Nereden |
+| Field | Source |
 | --- | --- |
 | Model | `ro.product.model` |
-| Seri no | `ro.serialno`, yoksa ADB seri numarası |
-| IMEI 1 / IMEI 2 | `iphonesubinfo` servisi |
+| Serial | `ro.serialno`, or the ADB serial if that is empty |
+| IMEI 1 / IMEI 2 | `iphonesubinfo` service |
 | CSC | `ro.csc.sales_code` |
-| CSC sürüm | `mdc.omc.config_version` |
+| CSC version | `mdc.omc.config_version` |
 | Build number | `ro.build.display.id` |
 | Baseband | `gsm.version.baseband` |
 | Android | `ro.build.version.release` |
-| One UI | `ro.build.version.oneui` (örnek: `80500` → 8.5) |
+| One UI | `ro.build.version.oneui` (for example `80500` becomes 8.5) |
 
-Excel sütunları: Sıra, Tarih Saat, Seri No, Model, IMEI 1, IMEI 2, CSC, CSC Sürüm, Build Number, Baseband, Android, One UI, Durum.
+Excel columns: No., Date Time, Serial, Model, IMEI 1, IMEI 2, CSC, CSC Version, Build Number, Baseband, Android, One UI, Status.
 
-IMEI ve seri numarası metin olarak yazılır. Excel bunları bilimsel gösterime çevirmez.
+IMEI and serial values are stored as text, so Excel does not turn them into scientific notation.
 
-## Çalıştırma
+## How to run
 
-1. Telefonda geliştirici seçenekleri ve USB hata ayıklama açık olsun.
-2. İlk bağlantıda ekrandaki **Bu bilgisayara izin ver** onaylansın. Onay yoksa satır yazılmaz.
-3. `Baslat.bat` çalıştırılsın.
+1. On the phone, turn on Developer options and USB debugging.
+2. On the first connection, accept **Allow USB debugging** on the phone. Without that approval, nothing is written.
+3. Run `Baslat.bat`.
 
-Python paketleri (`openpyxl`, `pyserial`, `Pillow`) yoksa bat dosyası kurar. `adb.exe` bu klasördedir, ayrıca kurulmaz.
+If `openpyxl`, `pyserial`, or `Pillow` is missing, the batch file installs them. `adb.exe` is in this folder, so ADB does not need a separate install.
 
-Varsayılan dosya `telefonlar.xlsx`. **Excel** bu dosyayı açar, **Gözat** başka dosya seçer. Kayıt sırasında dosya Excel'de açık olmamalıdır. Açıksa yazma `telefonlar_yedek.xlsx` dosyasına gider ve asıl dosya boşalınca tekrar denenir.
+The default workbook is `telefonlar.xlsx`. **Excel** opens that file. **Gözat** picks a different one. Do not leave the workbook open in Excel while phones are being recorded. If it is locked, the row is written to `telefonlar_yedek.xlsx` and copied back when the file is free.
 
-**Durdur** yeni telefon okumayı bekletir. **Yeniden oku** takılı telefonu tekrar okur. **Üstte** pencereyi önde tutar.
+**Durdur** pauses reading new phones. **Yeniden oku** reads the connected phone again. **Üstte** keeps the window on top.
 
-## Etiket
+## Label
 
-**IMEI 1 etiketi bas**, eşleşmiş Nelko P21 yazıcıya yalnızca IMEI 1 basar. Barkod Code 128'dir, yanında `XXXXXX XXXXXX XXX` biçiminde numara vardır. IMEI 2 basılmaz.
+**IMEI 1 etiketi bas** prints only IMEI 1 on a paired Nelko P21. The barcode is Code 128, with the number beside it as `XXXXXX XXXXXX XXX`. IMEI 2 is not printed.
 
-Yazıcı Bluetooth SPP (COM) üzerinden konuşur. Windows Ayarlar'da "bağlandı" deyip hemen düşmesi normaldir. Port yalnızca baskı sırasında açık kalır.
+The printer speaks Bluetooth SPP over a COM port. Windows Settings showing Connected and then immediately Disconnected is normal. The port stays open only while a label is printing.
 
-Etiket ölçüsü yazıcıdaki rulodan okunur. Okunamazsa 14×40 mm, 5 mm boşluk kullanılır.
+Label size is read from the roll in the printer. If that fails, the job uses 14×40 mm with a 5 mm gap.
 
-## Repoya girmeyen dosyalar
+## Not in the repository
 
-`telefonlar.xlsx`, `telefonlar_yedek.xlsx`, `kayit.log` ve `ayar.json` kişisel kayıt ve ayardır. Repoya eklenmez.
+`telefonlar.xlsx`, `telefonlar_yedek.xlsx`, `kayit.log`, and `ayar.json` are local records and settings. They are not committed.

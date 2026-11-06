@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+ayar.json
+kayit.log
+*.xlsx
+*.png
